@@ -1,0 +1,236 @@
+<HTML>
+	<TITLE>SVG с настраиваемыми границами</TITLE>
+	
+	<BODY>
+		<SCRIPT src="Vue.js"></SCRIPT>
+		
+		<DIV id="mySVG">
+			<table>
+				<tr>
+					<td>Ширина:</td>
+					<td><input class="txt" v-model="wdth"></td>
+				</tr>
+				
+				<tr>
+					<td>Высота:</td>
+					<td><input class="txt" v-model="hght"></td>
+				</tr>
+				
+				<tr align="center">
+					<td colspan="2"><b>Базовые параметры:</b></td>
+				</tr>
+				
+				<tr>
+					<td>По горизонтали:</td>
+					<td><input class="rng" type="range" min="0" :max="w" v-model="x"></td>
+				</tr>
+				
+				<tr>
+					<td>По вертикали:</td>
+					<td><input class="rng" type="range" min="0" :max="h" v-model="y"></td>
+				</tr>
+				
+				<tr>
+					<td>Радиус:</td>
+					<td><input class="rng" type="range" min="0" :max="h" v-model="r"></td>
+				</tr>
+				
+				<tr align="center">
+					<td colspan="2"><b>Параметры заливки: <input class="txt" v-model="cl"></b></td>
+				</tr>
+				
+				<tr>
+					<td>Красный канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="rd"></td>
+				</tr>
+				
+				<tr>
+					<td>Зелёный канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="gr"></td>
+				</tr>
+
+				<tr>
+					<td>Синий канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="bl"></td>
+				</tr>		
+
+				<tr>
+					<td>Прозрачность:</td>
+					<td><input class="rng" type="range" step="0.01" min="0" max="1" v-model="alph"></td>
+				</tr>
+				
+				<tr align="center">
+					<td colspan="2"><b>Параметры обводки: <input class="txt" v-model="clS"></b></td>
+				</tr>
+				
+				<tr>
+					<td>Толщина:</td>
+					<td><input class="rng" type="range" step="0.1" min="0" max="10" v-model="str"></td>
+				</tr>				
+
+				<tr>
+					<td>Черта:</td>
+					<td><input class="rng" type="range" step="0.1" min="0" max="10" v-model="dsh"></td>
+				</tr>
+				
+				<tr>
+					<td>Смещение:</td>
+					<td><input class="rng" type="range" step="0.1" min="0" max="10" v-model="dshO"></td>
+				</tr>
+				
+				<tr>
+					<td>Красный канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="rdS"></td>
+				</tr>
+				
+				<tr>
+					<td>Зелёный канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="grS"></td>
+				</tr>
+
+				<tr>
+					<td>Синий канал:</td>
+					<td><input class="rng" type="range" min="0" max="255" v-model="blS"></td>
+				</tr>					
+			</table>
+			<br>
+			<svg @mousemove="moveToCursor" :width="w"
+				 :height="h">
+				<circle @mousedown="showMessage1" @mouseup="showMessage2" :cx="x" 
+						:cy="y" 
+						:r="r" 
+						:fill="cl" 
+						:fill-opacity="alph" 
+						:stroke="clS"
+						:stroke-width="str"
+						:stroke-dasharray="dsh"
+						:stroke-dashoffset="dshO">
+			</svg>
+		</DIV>
+		
+		<SCRIPT>
+			var app = new Vue({
+				el: '#mySVG',
+				data: 
+				{
+					w: 320,
+					h: 240,
+					x: 160,
+					y: 120,
+					r: 5,
+					rd: 0,
+					gr: 0,
+					bl: 0,
+					alph: 1.0,
+					rdS: 0,
+					grS: 0,
+					blS: 0,
+					alphS: 1.0,
+					str: 0.0,
+					dsh: 0.0,
+					dshO: 0.0,
+					flgDrag: false,
+				},
+				
+				computed:
+				{
+					hght:
+					{
+						get: function () 
+						{
+							return this.h
+						},
+						set: function (newValue) 
+						{
+							this.h = newValue;
+							this.w = (newValue * 4) / 3;
+						}
+					},
+					
+					wdth:
+					{
+						get: function () 
+						{
+							return this.w
+						},
+						set: function (newValue) 
+						{
+							this.w = newValue;
+							this.h = (newValue * 3) / 4;
+						}
+					},
+					
+					cl:function()
+					{
+						var redCh = Number(this.rd).toString(16);
+						var greenCh = Number(this.gr).toString(16);
+						var blueCh = Number(this.bl).toString(16);
+						
+						return "#" + 
+							(redCh.length < 2 ? "0" + redCh : redCh) + 
+							(greenCh.length < 2 ? "0" + greenCh : greenCh) + 
+							(blueCh.length < 2 ? "0" + blueCh : blueCh);
+					},
+					
+					clS:function()
+					{
+						var redCh = Number(this.rdS).toString(16);
+						var greenCh = Number(this.grS).toString(16);
+						var blueCh = Number(this.blS).toString(16);
+						
+						return "#" + 
+							(redCh.length < 2 ? "0" + redCh : redCh) + 
+							(greenCh.length < 2 ? "0" + greenCh : greenCh) + 
+							(blueCh.length < 2 ? "0" + blueCh : blueCh);
+					},					
+					
+					sty:function()
+					{
+						return "stroke: " + this.clS + ";" + "stroke-width: " + this.str + ";";
+					}
+				},
+				
+				methods:
+				{
+					showMessage1:function(e)
+					{
+						console.log(e);
+						this.flgDrag = true;
+					},
+					
+					showMessage2:function(e)
+					{
+						console.log("Отпущена");
+						this.flgDrag = false;
+					},
+					
+					moveToCursor:function(e)
+					{
+						//console.log(e);
+						if (this.flgDrag)
+						{
+							this.y += e.movementY;
+							this.x += e.movementX;
+						}
+					},					
+				},
+			})
+		</SCRIPT>
+
+		<STYLE type="text/css">
+			svg
+			{
+				border: 1px solid #000000;
+			}
+			.txt
+			{
+				width: 70px;
+			}
+			.rng
+			{
+				width: 200px;
+			}
+		</STYLE>
+	</BODY>
+	
+</HTML>
